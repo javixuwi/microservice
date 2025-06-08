@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: renting_mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    environment:
+      - MONGO_INITDB_DATABASE=RentingDB
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    networks:
+      - renting_network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  gtmotive.estimate.microservice.host:
+    image: ${DOCKER_REGISTRY-}gtmotiveestimatemicroservicehost
+    build:
+      context: .
+      dockerfile: GtMotive.Estimate.Microservice.Host/Dockerfile
+    container_name: estimate_api
+    ports:
+      - "5000:80"
+      - "5001:443"  
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDb__ConnectionString=mongodb://admin:admin@mongodb:27017/RentingDB?authSource=admin
+      - MongoDb__MongoDbDatabaseName=RentingDB
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - renting_network
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+
+networks:
+  renting_network:
+    driver: bridge
