@@ -23,7 +23,6 @@ namespace GtMotive.Estimate.Microservice.InfrastructureTests
         [Fact]
         public async Task CreateWithValidDataReturnsCreated()
         {
-            // Arrange
             var input = new CreateInput
             {
                 PlateNumber = "1234ABC",
@@ -39,10 +38,8 @@ namespace GtMotive.Estimate.Microservice.InfrastructureTests
                 "application/json");
             request.Content = content;
 
-            // Act
             using var response = await _client.SendAsync(request);
 
-            // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
 
@@ -55,7 +52,6 @@ namespace GtMotive.Estimate.Microservice.InfrastructureTests
             string brand,
             string model)
         {
-            // Arrange
             var input = new CreateInput
             {
                 PlateNumber = plateNumber,
@@ -71,10 +67,8 @@ namespace GtMotive.Estimate.Microservice.InfrastructureTests
                 "application/json");
             request.Content = content;
 
-            // Act
             using var response = await _client.SendAsync(request);
 
-            // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.NotEmpty(responseContent);

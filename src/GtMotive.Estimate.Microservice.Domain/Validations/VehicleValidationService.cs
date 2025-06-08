@@ -53,7 +53,6 @@ namespace GtMotive.Estimate.Microservice.Domain.Validations
             var today = DateTime.UtcNow;
             var age = today.Year - manufacturationDate.Year;
 
-            // Ajustar la edad si aún no ha llegado el aniversario este año
             if (manufacturationDate.Date > today.AddYears(-age))
             {
                 age--;

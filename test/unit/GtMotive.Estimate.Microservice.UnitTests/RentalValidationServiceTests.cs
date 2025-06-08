@@ -14,7 +14,6 @@ namespace GtMotive.Estimate.Microservice.UnitTests
 
         public RentalValidationServiceTests()
         {
-            // Arrange
             _vehicleRepositoryMock = new Mock<IVehicleRepository>();
             _sut = new RentalValidationService(_vehicleRepositoryMock.Object);
         }
@@ -25,7 +24,6 @@ namespace GtMotive.Estimate.Microservice.UnitTests
         [InlineData(" ")]
         public async Task ValidateClientCanRentWithInvalidClientIdThrowsDomainException(string clientId)
         {
-            // Act & Assert
             var exception = await Assert.ThrowsAsync<DomainException>(
                 () => _sut.ValidateClientCanRent(clientId));
 
@@ -36,13 +34,11 @@ namespace GtMotive.Estimate.Microservice.UnitTests
         [Fact]
         public async Task ValidateClientCanRentWhenClientHasRentedVehicleThrowsDomainException()
         {
-            // Arrange
             var clientId = "12345678A";
             _vehicleRepositoryMock
                 .Setup(x => x.HasClientRentedVehicle(clientId))
                 .ReturnsAsync(true);
 
-            // Act & Assert
             var exception = await Assert.ThrowsAsync<DomainException>(
                 () => _sut.ValidateClientCanRent(clientId));
 
@@ -53,16 +49,13 @@ namespace GtMotive.Estimate.Microservice.UnitTests
         [Fact]
         public async Task ValidateClientCanRentWhenClientHasNoRentedVehicleSucceeds()
         {
-            // Arrange
             var clientId = "12345678A";
             _vehicleRepositoryMock
                 .Setup(x => x.HasClientRentedVehicle(clientId))
                 .ReturnsAsync(false);
 
-            // Act
             await _sut.ValidateClientCanRent(clientId);
 
-            // Assert
             _vehicleRepositoryMock.Verify(x => x.HasClientRentedVehicle(clientId), Times.Once);
         }
     }
